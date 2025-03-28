@@ -34,6 +34,8 @@ public class Gastos {
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
+        dados.nextLine();
+
         System.out.println("Informe seu valor:");
         gasto = dados.nextDouble();
 
@@ -79,6 +81,9 @@ public class Gastos {
         }
 
         gastos.clear();
+        System.out.println("Gastos deletados.");
+
+        soma *= 0;
     }
 
 
@@ -119,6 +124,8 @@ public class Gastos {
 
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
+
+        dados.nextLine();
 
         boolean isExist = gastos.entrySet().stream()
             .anyMatch(g -> g.getKey().equalsIgnoreCase(name));
