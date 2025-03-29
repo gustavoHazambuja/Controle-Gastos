@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import com.example.Exceptions.DeleteException;
+import com.example.Exceptions.LimitException;
 import com.example.Exceptions.ModificationException;
 import com.example.Exceptions.SearchException;
 import com.example.Exceptions.ShowException;
@@ -22,12 +23,31 @@ public class Gastos {
 
     double soma = 0.0;
 
+    double limiteGasto;
+
     public Gastos(){
         this.gastos = new HashMap<String, List<Double>>();
     }
 
     public Map<String, List<Double>> getGastos() {
         return gastos;
+    }
+
+    public void limiteGastos(){
+
+        System.out.println("Informe o seu limite para gastos:");
+        limiteGasto = dados.nextDouble();
+
+        System.out.println("Seu limite de gastos é de: R$" + limiteGasto);
+    }
+
+    public void mostrarLimite(){
+
+        if(limiteGasto == 0.0){
+            throw new LimitException("Nenhum limite definido.");
+        }
+
+        System.out.println("Seu limite atual: " + limiteGasto);
     }
 
     public void adicionarGasto(){
@@ -40,6 +60,8 @@ public class Gastos {
 
         dados.nextLine();
 
+        verificaLimite(soma);
+
         gastos.computeIfAbsent(name, k -> new ArrayList<>()).add(gasto); // Armezena vários valores sem sobrescrever
         System.out.println("\nGasto adicionado.");
 
@@ -51,9 +73,6 @@ public class Gastos {
         if(gastos.isEmpty()){
             throw new ShowException("Nenhum gasto adicionado.");
         }
-
-        // gastos.entrySet().stream()
-        //     .forEach(System.out::println);
 
         gastos.forEach((key,values) -> 
         System.out.println("Gasto: " + key + " | Valores: R$ " + values));
@@ -91,14 +110,6 @@ public class Gastos {
         soma *= 0;
     }
 
-    public void limiteGastos(){
-
-        System.out.println("Informe o seu limite para gastos:");
-        Double limGasto = dados.nextDouble();
-
-        System.out.println("Seu limite de gastos é de: R$" + limGasto);
-    }
-
     public void pesquisarGasto(){
 
         System.out.println("Informe o nome do gasto:");
@@ -123,8 +134,7 @@ public class Gastos {
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
-
-       verificaModificacao(name);
+        verificaModificacao(name);
         
         System.out.println("Informe o novo valor:");
         Double newGasto =  dados.nextDouble();
@@ -160,6 +170,13 @@ public class Gastos {
 
         if(!isExist){
             throw new ModificationException("Gasto não encontrado.");
+        }
+    }
+
+    private void verificaLimite(double soma){
+
+        if(soma >= limiteGasto){
+            throw new LimitException("Limite atingido.");
         }
     }
 

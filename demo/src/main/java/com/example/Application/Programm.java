@@ -3,6 +3,7 @@ package com.example.Application;
 import java.util.Scanner;
 
 import com.example.Exceptions.DeleteException;
+import com.example.Exceptions.LimitException;
 import com.example.Exceptions.ModificationException;
 import com.example.Exceptions.SearchException;
 import com.example.Exceptions.ShowException;
@@ -23,13 +24,14 @@ public class Programm {
             System.out.println("****************************");
     
             System.out.println("(1) Definir limite para gastos");
-            System.out.println("(2) Adicionar gasto");
-            System.out.println("(3) Listar gastos");
-            System.out.println("(4) Remover todos os gastos");
-            System.out.println("(5) Remover gasto pelo nome");
-            System.out.println("(6) Pesquisar gasto");
-            System.out.println("(7) Modificar gasto");
-            System.out.println("(8) Sair");
+            System.out.println("(2) Mostrar limite");
+            System.out.println("(3) Adicionar gasto");
+            System.out.println("(4) Listar gastos");
+            System.out.println("(5) Remover todos os gastos");
+            System.out.println("(6) Remover gasto pelo nome");
+            System.out.println("(7) Pesquisar gasto");
+            System.out.println("(8) Modificar gasto");
+            System.out.println("(9) Sair");
             opcao = dados.nextInt();
             dados.nextLine();
 
@@ -39,10 +41,24 @@ public class Programm {
                     break;
 
                 case 2:
-                    gastos.adicionarGasto();
-                    break;
+                    try{
+                        gastos.mostrarLimite();
+                    }catch(LimitException e){
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                    
+                    break;    
 
                 case 3:
+                    try{
+                        gastos.adicionarGasto();
+                    }catch(LimitException e){
+                        System.out.println("Erro: " + e.getMessage());
+                    }
+                    
+                    break;
+
+                case 4:
                     try{
                         gastos.listarGastos();
                     }catch(ShowException e){
@@ -50,7 +66,7 @@ public class Programm {
                     }   
                     break;
                     
-                case 4:
+                case 5:
                     try{
                         gastos.removerTodosGastos();
                     }catch(DeleteException e){
@@ -58,7 +74,7 @@ public class Programm {
                     }  
                     break;
                     
-                case 5:
+                case 6:
                     try{
                         gastos.removerGastoPorNome();
                     }catch(DeleteException e){
@@ -66,7 +82,7 @@ public class Programm {
                     }    
                     break;
 
-                case 6:
+                case 7:
                     try{
                         gastos.pesquisarGasto();
                     }catch(SearchException e){
@@ -74,7 +90,7 @@ public class Programm {
                     }   
                     break;
                     
-                case 7:
+                case 8:
                     try{
                         gastos.modificarGasto();
                     }catch(ModificationException e){
@@ -82,7 +98,7 @@ public class Programm {
                     }    
                     break;
 
-                case 8:
+                case 9:
                     System.out.println("Saindo...");
                     break;    
 
@@ -91,7 +107,7 @@ public class Programm {
                    break;
             }
 
-    }while(opcao != 8);
+    }while(opcao != 9);
 
     dados.close();
   }
