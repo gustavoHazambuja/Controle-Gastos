@@ -52,7 +52,7 @@ public class Programm {
                     
                 case 4:
                     try{
-                        gastos.deletarTodosGastos();
+                        gastos.removerTodosGastos();
                     }catch(DeleteException e){
                         System.out.println("Erro. " + e.getMessage());
                     }  
@@ -60,7 +60,7 @@ public class Programm {
                     
                 case 5:
                     try{
-                        gastos.deletarGastoPorNome();
+                        gastos.removerGastoPorNome();
                     }catch(DeleteException e){
                         System.out.println("Erro. " + e.getMessage());
                     }    

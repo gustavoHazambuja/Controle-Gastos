@@ -1,5 +1,6 @@
 package com.example.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +15,7 @@ import com.example.Exceptions.ShowException;
 public class Gastos {
     Scanner dados = new Scanner(System.in);
     
-    private Map<String, Double> gastos;
+    private Map<String, List<Double>> gastos;
 
     String name;
     Double gasto;
@@ -22,10 +23,10 @@ public class Gastos {
     double soma = 0.0;
 
     public Gastos(){
-        this.gastos = new HashMap<String,Double>();
+        this.gastos = new HashMap<String, List<Double>>();
     }
 
-    public Map<String, Double> getGastos() {
+    public Map<String, List<Double>> getGastos() {
         return gastos;
     }
 
@@ -34,15 +35,15 @@ public class Gastos {
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
-        dados.nextLine();
-
         System.out.println("Informe seu valor:");
         gasto = dados.nextDouble();
 
-        gastos.put(name, gasto);
+        dados.nextLine();
+
+        gastos.computeIfAbsent(name, k -> new ArrayList<>()).add(gasto); // Armezena vários valores sem sobrescrever
         System.out.println("\nGasto adicionado.");
 
-        soma += gastos.get(name);
+        soma += gasto;
     }
 
     public void listarGastos(){
@@ -51,47 +52,44 @@ public class Gastos {
             throw new ShowException("Nenhum gasto adicionado.");
         }
 
-        gastos.entrySet().stream()
-            .forEach(System.out::println);
+        // gastos.entrySet().stream()
+        //     .forEach(System.out::println);
+
+        gastos.forEach((key,values) -> 
+        System.out.println("Gasto: " + key + " | Valores: R$ " + values));
+       
 
        System.out.println("Valor gasto até o momento: R$" + soma);     
     }
 
-    public void deletarGastoPorNome(){
+    public void removerGastoPorNome(){
 
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
-        boolean isExist = gastos.entrySet().stream()
-            .anyMatch(g -> g.getKey().equalsIgnoreCase(name));
+        verificaRemocao(name);
 
-       if(!isExist){
-        throw new DeleteException("Gasto não encontrado.");
-       }
+       double totalRemovido = gastos.get(name).stream()
+            .mapToDouble(Double::doubleValue).sum();
        
        gastos.remove(name);
-       System.out.println("\nGasto deletado.");
+       System.out.println("\nGasto removido.");
+
+       soma -= totalRemovido;
     }
 
 
-    public void deletarTodosGastos(){
+    public void removerTodosGastos(){
 
         if(gastos.isEmpty()){
             throw new DeleteException("Nenhum gasto adicionado.");
         }
 
         gastos.clear();
-        System.out.println("Gastos deletados.");
+        System.out.println("\nGastos removidos.");
 
         soma *= 0;
     }
-
-
-    public void mediaGastos(){
-
-
-    }
-
 
     public void limiteGastos(){
 
@@ -106,7 +104,7 @@ public class Gastos {
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
-        List<Map.Entry<String,Double>> searchGasto = gastos.entrySet().stream()
+        List<Map.Entry<String,List<Double>>> searchGasto = gastos.entrySet().stream()
             .filter(g -> g.getKey().toLowerCase().contains(name))
             .collect(Collectors.toList());
 
@@ -125,20 +123,46 @@ public class Gastos {
         System.out.println("Informe o nome do gasto:");
         name = dados.nextLine().toLowerCase();
 
-        dados.nextLine();
 
-        boolean isExist = gastos.entrySet().stream()
-            .anyMatch(g -> g.getKey().equalsIgnoreCase(name));
-
-        if(!isExist){
-            throw new ModificationException("Gasto não encontrado.");
-        }
+       verificaModificacao(name);
         
         System.out.println("Informe o novo valor:");
         Double newGasto =  dados.nextDouble();
 
-        gastos.put(name, newGasto);
+        List<Double> valores = gastos.get(name);
+        Double valorAntigo = valores.get(valores.size()-1);
+
+        valores.set(valores.size()-1, newGasto);
+
+        soma = soma - valorAntigo + newGasto;
+
         System.out.println("Valor atualizado.");
+
     }
+
+
+    private void verificaRemocao(String name){
+
+        boolean isExist = gastos.entrySet().stream()
+            .anyMatch(g -> g.getKey().equalsIgnoreCase(name));
+
+       if(!isExist){
+        throw new DeleteException("Gasto não encontrado.");
+       }
+
+    }
+
+
+    private void verificaModificacao(String name){
+
+        boolean isExist = gastos.entrySet().stream()
+        .anyMatch(g -> g.getKey().equalsIgnoreCase(name));
+
+        if(!isExist){
+            throw new ModificationException("Gasto não encontrado.");
+        }
+    }
+
+
 
 }
